@@ -1,17 +1,18 @@
-module seqdetect_1101_mealy (
+module seqdetect_1101_moore (
     input clk,
     input rst,
     input in,
     output reg dout
 );
 
-  parameter [1:0] 
-    S0 = 2'b00,
-    S1 = 2'b01,
-    S2 = 2'b10,
-    S3 = 2'b11;
+  parameter [2:0] 
+    S0 = 3'b000,
+    S1 = 3'b001,
+    S2 = 3'b010,
+    S3 = 3'b011,
+    S4 = 3'b100;  
 
-  reg [1:0] state, next_state;
+  reg [2:0] state, next_state;  
 
 
   always @(posedge clk or posedge rst) begin
@@ -21,7 +22,7 @@ module seqdetect_1101_mealy (
       state <= next_state;
   end
 
-  // Combinational Logic: Next State Logic using if-else
+
   always @(*) begin
     if (state == S0) begin
       if (in)
@@ -43,18 +44,24 @@ module seqdetect_1101_mealy (
     end 
     else if (state == S3) begin
       if (in)
-        next_state = S0;
+        next_state = S4;
       else
         next_state = S0;
+    end 
+    else if (state == S4) begin 
+      next_state = S0;
     end 
     else begin
       next_state = S0; 
     end
   end
 
-  
+
   always @(*) begin
-    dout = (state == S3) && (in == 0);
+    if (state == S4)
+      dout = 1;
+    else
+      dout = 0;
   end
 
 endmodule
